@@ -11,6 +11,7 @@ typedef struct Number {
     LL *head;
     LL *tail;
     int sign;
+    char *str;
 } Number;
 
 typedef enum { SUCCESS, FAILURE } Status;

@@ -1,12 +1,28 @@
+#include "helpers.h"
 #include "operations.h"
 #include <stdio.h>
 #include <stdlib.h>
 
+void trim_zeroes(Number *num) {
+    if (!num || !num->head)
+        return;
+    while (num->head->next && num->head->data == 0) {
+        LL *to_free = num->head;
+        num->head = num->head->next;
+        num->head->prev = NULL;
+        free(to_free);
+    }
+    if (num->head->data == 0)
+        num->sign = 1;
+}
+
 Status create_num(Number *num, char *str) {
     LL *prev = NULL;
     num->sign = 1;
+    num->str = str;
     if (str[0] == '-' || str[0] == '+') {
-        num->sign = (str[0] == '-') ? -1 : 1;
+        if (str[0] == '-')
+            num->sign = -1;
         str++;
     }
     for (int i = 0; str[i]; i++) {
@@ -20,64 +36,41 @@ Status create_num(Number *num, char *str) {
         prev = new;
     }
     num->tail = prev;
+    trim_zeroes(num);
     return SUCCESS;
 }
 
 void print_num(Number *num) {
+    if (num->sign == -1)
+        printf("-");
     LL *head = num->head;
     while (head) {
-        printf("%d ", head->data);
+        printf("%d", head->data);
         head = head->next;
     }
 }
 
 Number *addition(Number *num1, Number *num2) {
     Number *result = calloc(1, sizeof(Number));
-
-    LL *tail1 = num1->tail;
-    LL *tail2 = num2->tail;
-
-    int carry = 0;
-    LL *next = NULL;
-
-    while (tail1 || tail2) {
-        LL *new = calloc(1, sizeof(LL));
-        int sum = 0;
-        if (tail1)
-            sum += tail1->data;
-
-        if (tail2)
-            sum += tail2->data;
-
-        new->data = sum % 10;
-        carry = sum / 10;
-
-        if (!tail1->next && !tail2->next)
-            result->tail = new;
-
-        new->next = next;
-        if (next)
-            next->prev = new;
-        next = new;
-
-        if (tail1)
-            tail1 = tail1->prev;
-        if (tail2)
-            tail2 = tail2->prev;
+    if (num1->sign == num2->sign) {
+        result = add_magnitudes(num1, num2);
+        result->sign = num1->sign;
+    } else {
+        int cmp = compare_magnitudes(num1, num2);
+        if (cmp >= 0) {
+            result = sub_magnitudes(num1, num2);
+            result->sign = num1->sign;
+        } else {
+            result = sub_magnitudes(num2, num1);
+            result->sign = num2->sign;
+        }
     }
-    if (carry) {
-        LL *new = calloc(1, sizeof(LL));
-        new->data = carry;
-        new->next = next;
-        if (next)
-            next->prev = new;
-        next = new;
-    }
-    result->head = next;
+
+    trim_zeroes(result);
     return result;
 }
 
 Number *subtraction(Number *num1, Number *num2) {
-    Number *result = calloc(1, sizeof(Number));
-    return result;
+    num2->sign *= -1;
+    return addition(num1, num2);
 }
