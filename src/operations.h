@@ -11,12 +11,12 @@ typedef struct Number {
     LL *head;
     LL *tail;
     int sign;
-    char *str;
 } Number;
 
 typedef enum { SUCCESS, FAILURE } Status;
 
 Status create_num(Number *, char *);
+void free_num(Number *);
 void print_num(Number *);
 Status validate_num(char *num);
 Number *addition(Number *, Number *);

@@ -6,7 +6,6 @@
 Status create_num(Number *num, char *str) {
     LL *prev = NULL;
     num->sign = 1;
-    num->str = str;
     if (str[0] == '-' || str[0] == '+') {
         if (str[0] == '-')
             num->sign = -1;
@@ -35,15 +34,26 @@ void print_num(Number *num) {
         printf("%d", head->data);
         head = head->next;
     }
+    printf("\n");
+}
+
+void free_number_nodes(Number *num) {
+    if (!num)
+        return;
+    while (num->head) {
+        LL *to_free = num->head;
+        num->head = to_free->next;
+        free(to_free);
+    }
+    num->head = num->tail = NULL;
+}
+
+void free_num(Number *num) {
+    free_number_nodes(num);
+    free(num);
 }
 
 Number *addition(Number *num1, Number *num2) {
-    if (num1->head == NULL ||
-        (num1->head->next == NULL && num1->head->data == 0))
-        return num2;
-    if (num2->head == NULL ||
-        (num2->head->next == NULL && num2->head->data == 0))
-        return num1;
     Number *result;
     if (num1->sign == num2->sign) {
         result = add_magnitudes(num1, num2);

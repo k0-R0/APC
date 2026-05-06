@@ -1,5 +1,6 @@
 #include "operations.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 int main(int argc, char *argv[]) {
     if (argc != 4) {
@@ -13,23 +14,24 @@ int main(int argc, char *argv[]) {
         return 0;
     if (validate_num(b) == FAILURE)
         return 0;
-    Number num1, num2;
-    if (create_num(&num1, a) == FAILURE)
+    Number *num1 = malloc(sizeof(Number));
+    Number *num2 = malloc(sizeof(Number));
+    if (create_num(num1, a) == FAILURE)
         return 0;
-    if (create_num(&num2, b) == FAILURE)
+    if (create_num(num2, b) == FAILURE)
         return 0;
     Number *result;
     switch (*operation) {
     case '+':
-        result = addition(&num1, &num2);
+        result = addition(num1, num2);
         print_num(result);
         break;
     case '-':
-        result = subtraction(&num1, &num2);
+        result = subtraction(num1, num2);
         print_num(result);
         break;
-    case '*':
-        result = multiplication(&num1, &num2);
+    case 'x':
+        result = multiplication(num1, num2);
         print_num(result);
         break;
     case '/':
@@ -38,4 +40,7 @@ int main(int argc, char *argv[]) {
     default:
         break;
     }
+    free_num(num1);
+    free_num(num2);
+    free_num(result);
 }

@@ -16,7 +16,7 @@ void trim_zeroes(Number *num) {
 }
 
 void prepend_digit(Number *num, int digit) {
-    LL *new = calloc(1, sizeof(Number));
+    LL *new = calloc(1, sizeof(LL));
     new->data = digit;
     new->next = num->head;
     if (num->head)
@@ -26,39 +26,33 @@ void prepend_digit(Number *num, int digit) {
     num->head = new;
 }
 
-void trim_zeroes_string(char **str) {
-    while (*(*str + 1) && **str == '0')
-        (*str)++;
-}
-
-void free_num(Number *num) {
-    while (num->head) {
-        LL *to_free = num->head;
-        num->head = to_free->next;
-        free(to_free);
+int get_length(Number *num1) {
+    LL *head = num1->head;
+    int length = 0;
+    while (head) {
+        head = head->next;
+        length++;
     }
-    free(num);
+    return length;
 }
 
 int compare_magnitudes(Number *num1, Number *num2) {
-    trim_zeroes_string(&(num1->str));
-    trim_zeroes_string(&(num2->str));
-    char *str1 = num1->str;
-    char *str2 = num2->str;
-    int len1 = strlen(str1);
-    int len2 = strlen(str2);
+    int len1 = get_length(num1);
+    int len2 = get_length(num2);
     if (len1 > len2)
         return 1;
     else if (len1 < len2)
         return -1;
     else {
-        for (int i = 0; str1[i]; i++) {
-            if (str1[i] > str2[i])
+        LL *head1 = num1->head;
+        LL *head2 = num2->head;
+        while (head1) {
+            if (head1->data > head2->data)
                 return 1;
-            else if (str1[i] < str2[i])
+            else if (head1->data < head2->data)
                 return -1;
-            else
-                continue;
+            head1 = head1->next;
+            head2 = head2->next;
         }
     }
     return 0;
@@ -102,28 +96,27 @@ Number *sub_magnitudes(Number *num1, Number *num2) {
 
     int borrow = 0;
 
-    while (tail1 || tail2) {
-        int diff = -borrow;
-        if (tail1)
-            diff += tail1->data;
+    while (tail1) {
+        int diff = tail1->data - borrow;
 
-        if (tail2)
+        if (tail2) {
             diff -= tail2->data;
+            tail2 = tail2->prev;
+        }
 
         if (diff < 0) {
             borrow = 1;
             diff += 10;
+        } else {
+            borrow = 0;
         }
-        int digit = diff;
-        if (!digit && !tail2)
-            break;
-        prepend_digit(result, digit);
 
-        if (tail1)
-            tail1 = tail1->prev;
-        if (tail2)
-            tail2 = tail2->prev;
+        prepend_digit(result, diff);
+
+        tail1 = tail1->prev;
     }
+    if (result->head == NULL)
+        prepend_digit(result, 0);
     return result;
 }
 
