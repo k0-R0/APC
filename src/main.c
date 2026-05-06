@@ -3,7 +3,7 @@
 
 int main(int argc, char *argv[]) {
     if (argc != 4) {
-        printf("Error");
+        printf("Error %d", argc);
         return 0;
     }
     char *a = argv[1];
@@ -29,7 +29,8 @@ int main(int argc, char *argv[]) {
         print_num(result);
         break;
     case '*':
-        // multiplication();
+        result = multiplication(&num1, &num2);
+        print_num(result);
         break;
     case '/':
         // division();

@@ -21,6 +21,6 @@ void print_num(Number *);
 Status validate_num(char *num);
 Number *addition(Number *, Number *);
 Number *subtraction(Number *, Number *);
-void multiplication();
+Number *multiplication(Number *, Number *);
 void division();
 #endif // !OPERATIONS_H

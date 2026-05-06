@@ -31,6 +31,15 @@ void trim_zeroes_string(char **str) {
         (*str)++;
 }
 
+void free_num(Number *num) {
+    while (num->head) {
+        LL *to_free = num->head;
+        num->head = to_free->next;
+        free(to_free);
+    }
+    free(num);
+}
+
 int compare_magnitudes(Number *num1, Number *num2) {
     trim_zeroes_string(&(num1->str));
     trim_zeroes_string(&(num2->str));
@@ -114,6 +123,47 @@ Number *sub_magnitudes(Number *num1, Number *num2) {
             tail1 = tail1->prev;
         if (tail2)
             tail2 = tail2->prev;
+    }
+    return result;
+}
+
+Status mul_digit(Number *num, Number *result, int digit) {
+    LL *tail = num->tail;
+    int carry = 0;
+    while (tail) {
+        int product = carry + digit * tail->data;
+        carry = product / 10;
+        product %= 10;
+        prepend_digit(result, product);
+        tail = tail->prev;
+    }
+    if (carry)
+        prepend_digit(result, carry);
+    return SUCCESS;
+}
+
+Number *mul_magnitudes(Number *num1, Number *num2) {
+    Number *result = calloc(1, sizeof(Number));
+    LL *tail2 = num2->tail;
+
+    int digits_pos = 0;
+    while (tail2) {
+        int digit = tail2->data;
+        // keep track of digits position
+        Number *position_adjusted_num = calloc(1, sizeof(Number));
+        for (int i = 0; i < digits_pos; i++)
+            prepend_digit(position_adjusted_num, 0);
+        digits_pos++;
+        // multiply function for 1 digit
+        if (mul_digit(num1, position_adjusted_num, digit) == FAILURE)
+            exit(0);
+        // add multiplication result to current result
+        Number *digit_product = addition(result, position_adjusted_num);
+        // to check if something broke
+        free_num(result);
+        free_num(position_adjusted_num);
+        result = digit_product;
+        tail2 = tail2->prev;
     }
     return result;
 }

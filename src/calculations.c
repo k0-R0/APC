@@ -38,7 +38,13 @@ void print_num(Number *num) {
 }
 
 Number *addition(Number *num1, Number *num2) {
-    Number *result = calloc(1, sizeof(Number));
+    if (num1->head == NULL ||
+        (num1->head->next == NULL && num1->head->data == 0))
+        return num2;
+    if (num2->head == NULL ||
+        (num2->head->next == NULL && num2->head->data == 0))
+        return num1;
+    Number *result;
     if (num1->sign == num2->sign) {
         result = add_magnitudes(num1, num2);
         result->sign = num1->sign;
@@ -60,4 +66,10 @@ Number *addition(Number *num1, Number *num2) {
 Number *subtraction(Number *num1, Number *num2) {
     num2->sign *= -1;
     return addition(num1, num2);
+}
+
+Number *multiplication(Number *num1, Number *num2) {
+    Number *result = mul_magnitudes(num1, num2);
+    result->sign = (num1->sign == num2->sign) ? 1 : -1;
+    return result;
 }
