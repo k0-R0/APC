@@ -2,6 +2,19 @@
 #include <stdlib.h>
 #include <string.h>
 
+void trim_zeroes(Number *num) {
+    if (!num || !num->head)
+        return;
+    while (num->head->next && num->head->data == 0) {
+        LL *to_free = num->head;
+        num->head = num->head->next;
+        num->head->prev = NULL;
+        free(to_free);
+    }
+    if (num->head->data == 0)
+        num->sign = 1;
+}
+
 void prepend_digit(Number *num, int digit) {
     LL *new = calloc(1, sizeof(Number));
     new->data = digit;
@@ -13,7 +26,14 @@ void prepend_digit(Number *num, int digit) {
     num->head = new;
 }
 
+void trim_zeroes_string(char **str) {
+    while (*(*str + 1) && **str == '0')
+        (*str)++;
+}
+
 int compare_magnitudes(Number *num1, Number *num2) {
+    trim_zeroes_string(&(num1->str));
+    trim_zeroes_string(&(num2->str));
     char *str1 = num1->str;
     char *str2 = num2->str;
     int len1 = strlen(str1);

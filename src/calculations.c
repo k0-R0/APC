@@ -3,19 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void trim_zeroes(Number *num) {
-    if (!num || !num->head)
-        return;
-    while (num->head->next && num->head->data == 0) {
-        LL *to_free = num->head;
-        num->head = num->head->next;
-        num->head->prev = NULL;
-        free(to_free);
-    }
-    if (num->head->data == 0)
-        num->sign = 1;
-}
-
 Status create_num(Number *num, char *str) {
     LL *prev = NULL;
     num->sign = 1;
