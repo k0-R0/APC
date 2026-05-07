@@ -78,10 +78,11 @@ Number *subtraction(Number *num1, Number *num2) {
     return addition(num1, num2);
 }
 
-Number *multiplication(Number *num1, Number *num2) {
-    Number *result = mul_magnitudes(num1, num2);
+Status multiplication(Number *num1, Number *num2, Number *result) {
+    if (mul_magnitudes(num1, num2, result) == FAILURE)
+        return FAILURE;
     result->sign = (num1->sign == num2->sign) ? 1 : -1;
-    return result;
+    return SUCCESS;
 }
 
 Status division(Number *num1, Number *num2, Number *result) {

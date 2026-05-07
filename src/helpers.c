@@ -16,8 +16,10 @@ void trim_zeroes(Number *num) {
         num->sign = 1;
 }
 
-void prepend_digit(Number *num, int digit) {
+Status prepend_digit(Number *num, int digit) {
     LL *new = calloc(1, sizeof(LL));
+    if (!new)
+        return FAILURE;
     new->data = digit;
     new->next = num->head;
     if (num->head)
@@ -25,6 +27,7 @@ void prepend_digit(Number *num, int digit) {
     if (!num->tail)
         num->tail = new;
     num->head = new;
+    return SUCCESS;
 }
 
 void append_digit(Number *num, int digit) {
@@ -147,8 +150,7 @@ Status mul_digit(Number *num, Number *result, int digit) {
     return SUCCESS;
 }
 
-Number *mul_magnitudes(Number *num1, Number *num2) {
-    Number *result = calloc(1, sizeof(Number));
+Status mul_magnitudes(Number *num1, Number *num2, Number *result) {
     LL *tail2 = num2->tail;
 
     int digits_pos = 0;
@@ -157,20 +159,24 @@ Number *mul_magnitudes(Number *num1, Number *num2) {
         // keep track of digits position
         Number *position_adjusted_num = calloc(1, sizeof(Number));
         for (int i = 0; i < digits_pos; i++)
-            prepend_digit(position_adjusted_num, 0);
+            if (prepend_digit(position_adjusted_num, 0) == FAILURE)
+                return FAILURE;
         digits_pos++;
         // multiply function for 1 digit
         if (mul_digit(num1, position_adjusted_num, digit) == FAILURE)
-            exit(0);
+            return FAILURE;
         // add multiplication result to current result
-        Number *digit_product = addition(result, position_adjusted_num);
+        Number *temp_sum = addition(result, position_adjusted_num);
         // to check if something broke
-        free_num(result);
+        // clear result nodes and swap it with temp_sum
+        free_number_nodes(result);
+        result->head = temp_sum->head;
+        result->tail = temp_sum->tail;
+
         free_num(position_adjusted_num);
-        result = digit_product;
         tail2 = tail2->prev;
     }
-    return result;
+    return SUCCESS;
 }
 
 int find_cofactor(Number **dividend_ptr, Number *divisor) {

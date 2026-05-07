@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
         return 0;
     if (create_num(num2, b) == FAILURE)
         return 0;
-    Number *result = NULL;
+    Number *result = calloc(1, sizeof(Number));
     switch (*operation) {
     case '+':
         result = addition(num1, num2);
@@ -30,12 +30,15 @@ int main(int argc, char *argv[]) {
         result = subtraction(num1, num2);
         print_num(result);
         break;
-    case 'x':
-        result = multiplication(num1, num2);
+    case 'x': {
+        if (multiplication(num1, num2, result) == FAILURE) {
+            printf("Multiplication Failed.");
+            break;
+        };
         print_num(result);
         break;
+    }
     case '/': {
-        result = calloc(1, sizeof(Number));
         if (division(num1, num2, result) == DIVISON_BY_ZERO) {
             printf("Attempt to divide by Zero.\n");
             break;
