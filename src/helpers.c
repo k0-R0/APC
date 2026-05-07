@@ -1,3 +1,4 @@
+#include "helpers.h"
 #include "operations.h"
 #include <stdlib.h>
 #include <string.h>
@@ -24,6 +25,17 @@ void prepend_digit(Number *num, int digit) {
     if (!num->tail)
         num->tail = new;
     num->head = new;
+}
+
+void append_digit(Number *num, int digit) {
+    LL *new = calloc(1, sizeof(LL));
+    new->data = digit;
+    new->prev = num->tail;
+    if (num->tail)
+        num->tail->next = new;
+    if (!num->head)
+        num->head = new;
+    num->tail = new;
 }
 
 int get_length(Number *num1) {
@@ -159,4 +171,56 @@ Number *mul_magnitudes(Number *num1, Number *num2) {
         tail2 = tail2->prev;
     }
     return result;
+}
+
+int find_cofactor(Number **dividend_ptr, Number *divisor) {
+    for (int i = 9; i >= 0; i--) {
+        Number *multiple = calloc(1, sizeof(Number));
+        multiple->sign = 1;
+        mul_digit(divisor, multiple, i);
+        trim_zeroes(multiple);
+
+        if (compare_magnitudes(*dividend_ptr, multiple) >= 0) {
+            Number *remainder = sub_magnitudes(*dividend_ptr, multiple);
+            remainder->sign = 1;
+            free_num(multiple);
+            free_num(*dividend_ptr);
+            *dividend_ptr = remainder;
+            return i;
+        }
+        free_num(multiple);
+    }
+    return 0;
+}
+
+Status divide_magnitudes(Number *num1, Number *num2, Number *result) {
+    int cmp = compare_magnitudes(num1, num2);
+    if (cmp == EQUAL) {
+        append_digit(result, 1);
+        return SUCCESS;
+    } else if (cmp == LESS_THAN) {
+        append_digit(result, 0);
+        return SUCCESS;
+    }
+
+    Number *dividend = calloc(1, sizeof(Number));
+    dividend->sign = 1;
+    LL *head = num1->head;
+
+    while (head) {
+        append_digit(dividend, head->data);
+        trim_zeroes(dividend);
+
+        if (compare_magnitudes(dividend, num2) >= 0) {
+            int cofactor = find_cofactor(&dividend, num2);
+            append_digit(result, cofactor);
+        } else {
+            append_digit(result, 0);
+        }
+        head = head->next;
+    }
+
+    free_num(dividend);
+    trim_zeroes(result);
+    return SUCCESS;
 }

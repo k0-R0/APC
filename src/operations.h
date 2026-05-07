@@ -13,14 +13,15 @@ typedef struct Number {
     int sign;
 } Number;
 
-typedef enum { SUCCESS, FAILURE } Status;
+typedef enum { SUCCESS, FAILURE, DIVISON_BY_ZERO } Status;
 
 Status create_num(Number *, char *);
 void free_num(Number *);
+void free_number_nodes(Number *num);
 void print_num(Number *);
 Status validate_num(char *num);
 Number *addition(Number *, Number *);
 Number *subtraction(Number *, Number *);
 Number *multiplication(Number *, Number *);
-void division();
+Status division(Number *, Number *, Number *);
 #endif // !OPERATIONS_H

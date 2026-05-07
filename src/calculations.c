@@ -60,7 +60,7 @@ Number *addition(Number *num1, Number *num2) {
         result->sign = num1->sign;
     } else {
         int cmp = compare_magnitudes(num1, num2);
-        if (cmp >= 0) {
+        if (cmp == GREATER_THAN || cmp == EQUAL) {
             result = sub_magnitudes(num1, num2);
             result->sign = num1->sign;
         } else {
@@ -82,4 +82,13 @@ Number *multiplication(Number *num1, Number *num2) {
     Number *result = mul_magnitudes(num1, num2);
     result->sign = (num1->sign == num2->sign) ? 1 : -1;
     return result;
+}
+
+Status division(Number *num1, Number *num2, Number *result) {
+    if (num2->head->data == 0)
+        return DIVISON_BY_ZERO;
+    if (divide_magnitudes(num1, num2, result) == FAILURE)
+        return FAILURE;
+    result->sign = (num1->sign == num2->sign) ? 1 : -1;
+    return SUCCESS;
 }
