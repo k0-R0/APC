@@ -13,6 +13,8 @@ Status create_num(Number *num, char *str) {
     }
     for (int i = 0; str[i]; i++) {
         LL *new = calloc(1, sizeof(LL));
+        if (!new)
+            return FAILURE;
         new->data = str[i] - '0';
         new->prev = prev;
         if (i == 0)
@@ -53,29 +55,33 @@ void free_num(Number *num) {
     free(num);
 }
 
-Number *addition(Number *num1, Number *num2) {
-    Number *result;
+Status addition(Number *num1, Number *num2, Number *result) {
     if (num1->sign == num2->sign) {
-        result = add_magnitudes(num1, num2);
+        if (add_magnitudes(num1, num2, result) == FAILURE)
+            return FAILURE;
         result->sign = num1->sign;
     } else {
         int cmp = compare_magnitudes(num1, num2);
         if (cmp == GREATER_THAN || cmp == EQUAL) {
-            result = sub_magnitudes(num1, num2);
+            if (sub_magnitudes(num1, num2, result) == FAILURE)
+                return FAILURE;
             result->sign = num1->sign;
         } else {
-            result = sub_magnitudes(num2, num1);
+            if (sub_magnitudes(num2, num1, result) == FAILURE)
+                return FAILURE;
             result->sign = num2->sign;
         }
     }
 
     trim_zeroes(result);
-    return result;
+    return SUCCESS;
 }
 
-Number *subtraction(Number *num1, Number *num2) {
+Status subtraction(Number *num1, Number *num2, Number *result) {
     num2->sign *= -1;
-    return addition(num1, num2);
+    if (addition(num1, num2, result) == FAILURE)
+        return FAILURE;
+    return SUCCESS;
 }
 
 Status multiplication(Number *num1, Number *num2, Number *result) {

@@ -10,24 +10,42 @@ int main(int argc, char *argv[]) {
     char *a = argv[1];
     char *b = argv[3];
     char *operation = argv[2];
-    if (validate_num(a) == FAILURE)
+    if (validate_num(a) == FAILURE) {
+        printf("Invalid number 1");
         return 0;
-    if (validate_num(b) == FAILURE)
+    }
+    if (validate_num(b) == FAILURE) {
+        printf("Invalid number 2");
         return 0;
-    Number *num1 = malloc(sizeof(Number));
-    Number *num2 = malloc(sizeof(Number));
-    if (create_num(num1, a) == FAILURE)
+    }
+    Number *num1 = calloc(1, sizeof(Number));
+    Number *num2 = calloc(1, sizeof(Number));
+    if (create_num(num1, a) == FAILURE) {
+        free_num(num1);
+        free_num(num2);
+        printf("Error creating number");
         return 0;
-    if (create_num(num2, b) == FAILURE)
+    }
+    if (create_num(num2, b) == FAILURE) {
+        free_num(num1);
+        free_num(num2);
+        printf("Error creating number");
         return 0;
+    }
     Number *result = calloc(1, sizeof(Number));
     switch (*operation) {
     case '+':
-        result = addition(num1, num2);
+        if (addition(num1, num2, result) == FAILURE) {
+            printf("Addition Failed.");
+            break;
+        }
         print_num(result);
         break;
     case '-':
-        result = subtraction(num1, num2);
+        if (subtraction(num1, num2, result) == FAILURE) {
+            printf("subtraction Failed.");
+            break;
+        }
         print_num(result);
         break;
     case 'x': {
@@ -39,8 +57,12 @@ int main(int argc, char *argv[]) {
         break;
     }
     case '/': {
-        if (division(num1, num2, result) == DIVISON_BY_ZERO) {
+        Status status = division(num1, num2, result);
+        if (status == DIVISON_BY_ZERO) {
             printf("Attempt to divide by Zero.\n");
+            break;
+        } else if (status == FAILURE) {
+            printf("Division Failed.");
             break;
         }
         print_num(result);

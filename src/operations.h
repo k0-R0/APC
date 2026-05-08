@@ -20,8 +20,8 @@ void free_num(Number *);
 void free_number_nodes(Number *num);
 void print_num(Number *);
 Status validate_num(char *num);
-Number *addition(Number *, Number *);
-Number *subtraction(Number *, Number *);
+Status addition(Number *, Number *, Number *);
+Status subtraction(Number *, Number *, Number *);
 Status multiplication(Number *, Number *, Number *);
 Status division(Number *, Number *, Number *);
 #endif // !OPERATIONS_H
