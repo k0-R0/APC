@@ -39,11 +39,11 @@ make
 
 ### Run
 ```bash
-./build/bin/apc <number1> <operator> <number2>
+./build/bin/basic_calc <number1> <operator> <number2>
 ```
 *Operators supported: `+`, `-`, `x`, `/`*
 
 Example:
 ```bash
-./build/bin/apc 12345678901234567890 + 98765432109876543210
+./build/bin/basic_calc 12345678901234567890 + 98765432109876543210
 ```
